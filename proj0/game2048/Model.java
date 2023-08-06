@@ -3,7 +3,6 @@ package game2048;
 import java.util.Formatter;
 import java.util.Observable;
 
-
 /** The state of a game of 2048.
  *  @author Leezy
  */
@@ -115,18 +114,35 @@ public class Model extends Observable {
         // changed local variable to true.
 
         int len=this.board.size();
-        if(side==Side.NORTH)
-        {
-            for(int j=0;j<len;j++)
-                for(int i=len-1;i>0;i--) {
-                    if(this.board.tile(i, j)!=null){
+        board.setViewingPerspective(side);
 
+        for(int j=0;j<len;j++) {
+            boolean colMerged=false;
+            for (int i = 0; i < len; i++) {
+                if (board.tile(i, j) != null) {
+                    int sp = space(i, j);
+                    System.out.println(sp);
+                    if(sp==i&&board.tile(i, j).value() == board.tile(sp - 1, j).value()&&!colMerged){
+                        changed = true;
+                        colMerged=true;
+                        score += board.tile(i, j).value() * 2;
+                        board.tile(i, j).merge(i - 1, j, board.tile(i - 1, j));
                     }
-                    if (this.board.tile(i, j).value() == this.board.tile(i - 1, j).value())
-                        this.board.tile(i, j).merge(i - 1, j, this.board.tile(i - 1, j));
+                    else if(sp!=i&&board.tile(i, j).value() == board.tile(sp - 1, j).value()&&!colMerged)
+                    {
+                        changed = true;
+                        colMerged=true;
+                        score += board.tile(i, j).value() * 2;
+                        board.tile(i, j).merge(i - 1, j, board.tile(sp - 1, j));
+                    }
+                    else if(sp!=i) {
+                        changed = true;
+                        board.tile(i, j).move(sp,j);
+                    }
                 }
+            }
         }
-
+        board.setViewingPerspective(Side.NORTH);
 
         checkGameOver();
         if (changed) {
@@ -135,7 +151,14 @@ public class Model extends Observable {
         return changed;
     }
 
-
+    public int space(int row, int col) {
+        int len=this.board.size();
+        for(int i=row+1;i<len;i++){
+            if(board.tile(i,col)!=null)
+                return i-1;
+        }
+        return row;
+    }
 
 
     /** Checks if the game is over and sets the gameOver variable
