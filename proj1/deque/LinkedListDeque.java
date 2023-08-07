@@ -17,25 +17,34 @@ public class LinkedListDeque<T> {
 
     public LinkedListDeque(){
         sentinel=new myNode(null,null);
+        sentinel.prev=sentinel;
         size=0;
     }
     public LinkedListDeque(T i){
         sentinel=new myNode(null,null);
-        sentinel.next=new myNode(i,null);
+        sentinel.next=new myNode(i,sentinel);
+        sentinel.next.prev=sentinel;
+        sentinel.prev=sentinel.next;
         size=1;
     }
 //    public LinkedListDeque(LinkedListDeque other)
 
     public void addFirst(T item){
-        sentinel.next=new myNode(item,sentinel.next);
-        size+=1;
+        if(sentinel.prev==sentinel){
+            sentinel.next=new myNode(item,sentinel);
+
+            sentinel.prev=sentinel.next;
+        }else {
+            sentinel.next = new myNode(item, sentinel.next);
+        }
+        sentinel.next.prev=sentinel;
+        size += 1;
     }
     public void addLast(T item){
-        myNode p=sentinel;
-        while (p.next!=null){
-            p=p.next;
-        }
-        p.next=new myNode(item,null);
+        myNode p=sentinel.prev;
+        p.next=new myNode(item,sentinel);
+        p.next.prev=p;
+        sentinel.prev=p.next;
         size+=1;
     }
     public boolean isEmpty(){
@@ -46,7 +55,7 @@ public class LinkedListDeque<T> {
     }
     public void printDeque(){
         myNode p=sentinel;
-        while (p.next!=null){
+        while (p.next!=sentinel){
             p=p.next;
             System.out.println(p.item);
         }
