@@ -47,12 +47,15 @@ public class LinkedListDeque<T> {
         sentinel.prev=p.next;
         size+=1;
     }
+
     public boolean isEmpty(){
         return size==0;
     }
+
     public int size(){
         return size;
     }
+
     public void printDeque(){
         myNode p=sentinel;
         while (p.next!=sentinel){
@@ -60,7 +63,16 @@ public class LinkedListDeque<T> {
             System.out.println(p.item);
         }
     }
-//    public T removeFirst(){;}
+
+    public T removeFirst(){
+        if(size!=0){
+            myNode p=sentinel.next.next;
+            p.prev=sentinel;
+            sentinel.next=p;
+            size--;
+        }
+        return sentinel.item;
+    }
 //    public T removeLast(){;}
 //    public T get(int index){;}
 //    public T getRecursive(int index){;}
